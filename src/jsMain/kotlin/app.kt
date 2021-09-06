@@ -1,15 +1,43 @@
-import dev.fritz2.binding.storeOf
+import dev.fritz2.binding.RootStore
 import dev.fritz2.dom.html.render
-import kotlinx.coroutines.flow.map
+import dev.fritz2.tailwind.ui.application.forms.inputField
+import dev.fritz2.tailwind.ui.application.forms.toggleField
+import dev.fritz2.tailwind.ui.buttons.clickButton
+import dev.fritz2.tailwind.ui.icons.Solid
+import dev.fritz2.tailwind.validation.WithValidator
 import model.Framework
+import model.FrameworkValidator
+import model.L
+
+external fun require(module: String): dynamic
 
 fun main() {
-    val frameworkStore = storeOf(Framework("fritz2"))
+    require("./styles.css")
 
-    render {
-        p {
-            +"This site uses: "
-            b { frameworkStore.data.map { it.name }.asText() }
+    val frameworkStore = object : RootStore<Framework>(Framework("fritz2", 17, false)), WithValidator<Framework, Unit> {
+        override val validator = FrameworkValidator
+
+        init {
+            validate(Unit)
         }
     }
+
+    render {
+        inputField("m-10",
+            label = "Testlabel",
+            store = frameworkStore.sub(L.Framework.name),
+            helpText = "some help may be good...",
+            trailing = { span("text-gray-500 sm:text-sm") { +"EUR" } }
+        )
+
+        div("m-10") {
+            frameworkStore.data.asText()
+        }
+
+        clickButton("m-10", leftIcon = Solid.arrow_down, label = "herunterladen")
+
+        toggleField(label = "Hugo", store = frameworkStore.sub(L.Framework.bool))
+
+    }
+
 }
