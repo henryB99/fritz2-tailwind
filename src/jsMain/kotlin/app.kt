@@ -5,6 +5,7 @@ import dev.fritz2.tailwind.ui.application.forms.toggleField
 import dev.fritz2.tailwind.ui.buttons.clickButton
 import dev.fritz2.tailwind.ui.icons.Solid
 import dev.fritz2.tailwind.validation.WithValidator
+import kotlinx.browser.window
 import model.Framework
 import model.FrameworkValidator
 import model.L
@@ -34,10 +35,15 @@ fun main() {
             frameworkStore.data.asText()
         }
 
-        clickButton("m-10", leftIcon = Solid.arrow_down, label = "herunterladen")
+        clickButton("m-10") {
+            leftIcon(Solid.arrow_down)
+            label("herunterladen")
+        } handledBy frameworkStore.handle {
+            window.alert("Bin da")
+            it
+        }
 
         toggleField(label = "Hugo", store = frameworkStore.sub(L.Framework.bool))
 
     }
-
 }

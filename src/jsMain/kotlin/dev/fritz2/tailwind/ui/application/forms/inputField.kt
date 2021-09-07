@@ -70,7 +70,7 @@ fun RenderContext.inputField(
             validationMsgs?.render { msg ->
                 msg?.let {
                     div("absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none") {
-                        icon("h-5 w-5 text-red-500", Solid.exclamation_circle)
+                        icon("h-5 w-5 text-red-500") { content(Solid.exclamation_circle) }
                     }
                 }
             }
