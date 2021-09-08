@@ -4,6 +4,7 @@ import dev.fritz2.tailwind.ui.application.forms.inputField
 import dev.fritz2.tailwind.ui.application.forms.toggleField
 import dev.fritz2.tailwind.ui.buttons.clickButton
 import dev.fritz2.tailwind.ui.icons.Solid
+import dev.fritz2.tailwind.ui.toggle
 import dev.fritz2.tailwind.validation.WithValidator
 import kotlinx.browser.window
 import model.Framework
@@ -41,6 +42,11 @@ fun main() {
         } handledBy frameworkStore.handle {
             window.alert("Bin da")
             it
+        }
+
+        toggle {
+            label("Hallo Welt")
+            bind(store = frameworkStore.sub(L.Framework.bool))
         }
 
         toggleField(label = "Hugo", store = frameworkStore.sub(L.Framework.bool))
