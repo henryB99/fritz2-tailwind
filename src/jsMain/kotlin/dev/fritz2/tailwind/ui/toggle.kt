@@ -3,8 +3,8 @@ package dev.fritz2.tailwind.ui
 import dev.fritz2.binding.Handler
 import dev.fritz2.binding.Store
 import dev.fritz2.dom.Tag
-import dev.fritz2.dom.WithEvents
 import dev.fritz2.dom.html.Button
+import dev.fritz2.dom.html.Input
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.values
 import dev.fritz2.tailwind.Component
@@ -14,23 +14,23 @@ import dev.fritz2.tailwind.hook
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.w3c.dom.Element
-import org.w3c.dom.HTMLButtonElement
-import org.w3c.dom.HTMLInputElement
 
 
-open class DatabindingHook<T, E : Element, X>(
-    inline val changes: WithEvents<E>.() -> Flow<X>,
-    inline val handler: Store<T>.() -> Handler<X>
+open class DatabindingHook<T, X, Y : Tag<*>>(
+    inline val action: Y.() -> Flow<X>,
+    inline val handler: Store<T>.() -> Handler<X>,
+    inline val applyValues: Y.(Flow<T>) -> Unit
 ) {
     lateinit var values: Flow<T>
-    lateinit var register: Tag<E>.() -> Unit
+    lateinit var apply: Y.() -> Unit
     var id: String? = null
 
-    open operator fun invoke(id: String? = null, values: Flow<T>, handler: Tag<E>.(Flow<X>) -> Unit) {
+    open operator fun invoke(id: String? = null, values: Flow<T>, handler: Y.(Flow<X>) -> Unit) {
         this.id = id
         this.values = values
-        register = {
-            handler(changes())
+        apply = {
+            applyValues(values)
+            handler(action())
         }
     }
 
@@ -39,16 +39,18 @@ open class DatabindingHook<T, E : Element, X>(
     }
 }
 
-fun <T, E : Element, X> Tag<E>.bind(h: DatabindingHook<T, E, X>) = h.register.invoke(this)
+fun <T, E : Element, X, Y : Tag<E>> Y.hook(h: DatabindingHook<T, X, Y>) = h.apply.invoke(this)
 
-class InputDatabindingHook : DatabindingHook<String, HTMLInputElement, String>(
-    changes = { changes.values() },
-    handler = { update }
+class InputDatabindingHook : DatabindingHook<String, String, Input>(
+    action = { changes.values() },
+    handler = { update },
+    applyValues = { value(it) }
 )
 
-class SwitchDatabindingHook : DatabindingHook<Boolean, HTMLButtonElement, Unit>(
-    changes = { clicks.events.map {} },
-    handler = { handle { !it } }
+class SwitchDatabindingHook : DatabindingHook<Boolean, Unit, Button>(
+    action = { clicks.events.map {} },
+    handler = { handle { !it } },
+    applyValues = { attr("aria-checked", it, trueValue = "true") }
 )
 
 
@@ -107,14 +109,13 @@ class Toggle(initializer: Initializer<Toggle>, context: RenderContext) : Compone
         ) {
             type("button")
             attr("role", "switch")
-            attr("aria-checked", value.values, trueValue = "true")
             span("sr-only") { hook(label) }
             span(" pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200") {
                 /* <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" --> */
                 className(value.values.map { if (it) "translate-x-5" else "translate-x-0" })
                 attr("aria-hidden", "true")
             }
-            bind(value)
+            hook(value)
         }
 
     init {
