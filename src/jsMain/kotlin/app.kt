@@ -25,6 +25,7 @@ fun main() {
     }
 
     render {
+
         inputField("m-10",
             label = "Testlabel",
             store = frameworkStore.sub(L.Framework.name),
@@ -46,7 +47,7 @@ fun main() {
 
         toggle {
             label("Hallo Welt")
-            bind(store = frameworkStore.sub(L.Framework.bool))
+            value(store = frameworkStore.sub(L.Framework.bool))
         }
 
         toggleField(label = "Hugo", store = frameworkStore.sub(L.Framework.bool))

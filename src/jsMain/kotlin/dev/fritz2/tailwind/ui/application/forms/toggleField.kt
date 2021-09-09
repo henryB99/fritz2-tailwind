@@ -15,7 +15,7 @@ fun RenderContext.toggleField(
     div("flex items-center") {
         toggle(classes) {
             label(label)
-            bind(store)
+            value(store)
         }
         span(baseClass = "ml-3", id = id?.let { "$id-label" }) {
             span("text-sm font-medium text-gray-900") { +label }

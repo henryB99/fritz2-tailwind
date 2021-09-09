@@ -12,11 +12,11 @@ typealias Initializer<T> = T.() -> Unit
  * TODO: second type parameter needed for return value?
  */
 abstract class Hook<R> {
-    var render: (R.(String?) -> Unit)? = null
+    var apply: (R.(String?) -> Unit)? = null
 
     val hook: R.(classes: String?) -> Unit
         get() = { classes ->
-            render?.let { it(classes) }
+            apply?.let { it(classes) }
         }
 }
 
@@ -31,13 +31,14 @@ fun <T> T.hook(h: Hook<T>, classes: String? = null) {
 
 class TextHook : Hook<WithText<*>>() {
     operator fun invoke(value: String) {
-        render = { +value }
+        apply = { +value }
     }
 
     operator fun invoke(value: Flow<String>) {
-        render = { value.asText() }
+        apply = { value.asText() }
     }
 }
+
 
 
 class IconHook : Hook<RenderContext>() {
@@ -51,13 +52,13 @@ class IconHook : Hook<RenderContext>() {
         }
 
     operator fun invoke(value: IconDefinition) {
-        render = { classes ->
+        apply = { classes ->
             renderSvg(classes, value)
         }
     }
 
     operator fun invoke(value: Flow<IconDefinition>) {
-        render = { classes ->
+        apply = { classes ->
 //            lateinit var result: Svg
             value.render {
                 renderSvg(classes, it)

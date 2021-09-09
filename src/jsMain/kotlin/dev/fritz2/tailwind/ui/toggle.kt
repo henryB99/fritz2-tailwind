@@ -19,8 +19,8 @@ import org.w3c.dom.HTMLInputElement
 
 
 open class DatabindingHook<T, E : Element, X>(
-    val changes: WithEvents<E>.() -> Flow<X>,
-    val handler: Store<T>.() -> Handler<X>
+    inline val changes: WithEvents<E>.() -> Flow<X>,
+    inline val handler: Store<T>.() -> Handler<X>
 ) {
     lateinit var values: Flow<T>
     lateinit var register: Tag<E>.() -> Unit
@@ -39,34 +39,82 @@ open class DatabindingHook<T, E : Element, X>(
     }
 }
 
-fun <T, E : Element, X> Tag<E>.hook(h: DatabindingHook<T, E, X>) = h.register.invoke(this)
+fun <T, E : Element, X> Tag<E>.bind(h: DatabindingHook<T, E, X>) = h.register.invoke(this)
 
-class InputDatabindingHook : DatabindingHook<String, HTMLInputElement, String>({ changes.values() }, { update })
+class InputDatabindingHook : DatabindingHook<String, HTMLInputElement, String>(
+    changes = { changes.values() },
+    handler = { update }
+)
 
-class SwitchDatabindingHook :
-    DatabindingHook<Boolean, HTMLButtonElement, Unit>({ clicks.events.map {} }, { handle { !it } })
+class SwitchDatabindingHook : DatabindingHook<Boolean, HTMLButtonElement, Unit>(
+    changes = { clicks.events.map {} },
+    handler = { handle { !it } }
+)
 
 
-class Toggle(initializer: Initializer<Toggle>) : Component<Button> {
+/*
+toggle {
+    value(myStore)
+
+    value(id = ..., flow = ...) {
+        selected handledBy myHandler
+    }
+
+    element {
+        disabled()
+        keyUps handledBy
+    }
+
+    events {
+
+    }
+}
+
+
+
+inputField("ssdkfn skdfjnsdk skdfjnskd ksdjfnskdjf ksdjfnsk sdkjfbsdk") {
+    label("myLabel") {
+        className("sdkjfnskdj")
+    }
+
+    helpText("kajsdbkjsbfsjdh") {
+    }
+
+    value(myStore)
+
+    element {
+        keyUps handled
+        disabled ...
+    }
+
+    items {
+    }
+
+}.domNode().also {
+}
+
+*/
+
+class Toggle(initializer: Initializer<Toggle>, context: RenderContext) : Component<Button> {
 
     val label = TextHook()
-    val bind = SwitchDatabindingHook()
+    val value = SwitchDatabindingHook()
 
     override fun RenderContext.render(classes: String?, id: String?) =
         button(
             "bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 $classes",
-            id = id ?: bind.id // ?: generateId if necessary
+            id = id ?: value.id // ?: generateId if necessary
         ) {
             type("button")
             attr("role", "switch")
-            attr("aria-checked", bind.values, trueValue = "true")
+            attr("aria-checked", value.values, trueValue = "true")
             span("sr-only") { hook(label) }
             span(" pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200") {
                 /* <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" --> */
-                className(bind.values.map { if (it) "translate-x-5" else "translate-x-0" })
+                className(value.values.map { if (it) "translate-x-5" else "translate-x-0" })
                 attr("aria-hidden", "true")
             }
-            hook(bind)
+            bind(value)
         }
 
     init {
@@ -78,4 +126,4 @@ fun RenderContext.toggle(
     classes: String? = null,
     id: String? = null,
     init: Initializer<Toggle>
-): Button = Toggle(init).run { render(classes, id) }
+): Button = Toggle(init, this).run { render(classes, id) }

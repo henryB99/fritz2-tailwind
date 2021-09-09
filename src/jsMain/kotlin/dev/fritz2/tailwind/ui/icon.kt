@@ -37,4 +37,3 @@ fun RenderContext.solidIcon(classes: String? = null, id: String? = null, init: S
     icon(classes, id) {
         content(Solid.init())
     }
-
