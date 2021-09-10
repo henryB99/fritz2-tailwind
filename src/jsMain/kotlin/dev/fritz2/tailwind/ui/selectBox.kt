@@ -5,7 +5,7 @@ import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.html.Select
 import dev.fritz2.dom.selectedIndex
 import dev.fritz2.tailwind.Component
-import dev.fritz2.tailwind.ui.hooks.*
+import dev.fritz2.tailwind.hooks.*
 
 
 class SelectBox<T>(initializer: Initializer<SelectBox<T>>) : Component<Div> {

@@ -1,4 +1,4 @@
-package dev.fritz2.tailwind.ui.hooks
+package dev.fritz2.tailwind.hooks
 
 import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.Option

@@ -1,5 +1,5 @@
 import dev.fritz2.dom.DomListener
-import dev.fritz2.tailwind.ui.hooks.Initializer
+import dev.fritz2.tailwind.hooks.Initializer
 import org.w3c.dom.Element
 import org.w3c.dom.events.Event
 

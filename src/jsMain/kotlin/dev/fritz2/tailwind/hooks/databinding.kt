@@ -1,4 +1,4 @@
-package dev.fritz2.tailwind.ui.hooks
+package dev.fritz2.tailwind.hooks
 
 import dev.fritz2.binding.Handler
 import dev.fritz2.binding.Store

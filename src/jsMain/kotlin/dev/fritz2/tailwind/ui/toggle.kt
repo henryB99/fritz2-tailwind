@@ -3,10 +3,10 @@ package dev.fritz2.tailwind.ui
 import dev.fritz2.dom.html.Button
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.tailwind.Component
-import dev.fritz2.tailwind.ui.hooks.Initializer
-import dev.fritz2.tailwind.ui.hooks.TextHook
-import dev.fritz2.tailwind.ui.hooks.ToggleDatabindingHook
-import dev.fritz2.tailwind.ui.hooks.hook
+import dev.fritz2.tailwind.hooks.Initializer
+import dev.fritz2.tailwind.hooks.TextHook
+import dev.fritz2.tailwind.hooks.ToggleDatabindingHook
+import dev.fritz2.tailwind.hooks.hook
 import kotlinx.coroutines.flow.map
 
 
