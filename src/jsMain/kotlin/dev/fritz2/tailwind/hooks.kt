@@ -18,6 +18,9 @@ abstract class Hook<R> {
         get() = { classes ->
             apply?.let { it(classes) }
         }
+
+    val isSet: Boolean
+        get() = (apply != null)
 }
 
 /*

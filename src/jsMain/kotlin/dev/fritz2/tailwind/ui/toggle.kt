@@ -19,17 +19,17 @@ import org.w3c.dom.Element
 open class DatabindingHook<T, X, Y : Tag<*>>(
     inline val action: Y.() -> Flow<X>,
     inline val handler: Store<T>.() -> Handler<X>,
-    inline val applyValues: Y.(Flow<T>) -> Unit
+    inline val applyData: Y.(Flow<T>) -> Unit
 ) {
-    lateinit var values: Flow<T>
+    lateinit var data: Flow<T>
     lateinit var apply: Y.() -> Unit
     var id: String? = null
 
-    open operator fun invoke(id: String? = null, values: Flow<T>, handler: Y.(Flow<X>) -> Unit) {
+    open operator fun invoke(id: String? = null, data: Flow<T>, handler: Y.(Flow<X>) -> Unit) {
         this.id = id
-        this.values = values
+        this.data = data
         apply = {
-            applyValues(values)
+            applyData(data)
             handler(action())
         }
     }
@@ -44,13 +44,16 @@ fun <T, E : Element, X, Y : Tag<E>> Y.hook(h: DatabindingHook<T, X, Y>) = h.appl
 class InputDatabindingHook : DatabindingHook<String, String, Input>(
     action = { changes.values() },
     handler = { update },
-    applyValues = { value(it) }
+    applyData = { value(it) }
 )
 
-class SwitchDatabindingHook : DatabindingHook<Boolean, Unit, Button>(
+class ToggleDatabindingHook : DatabindingHook<Boolean, Unit, Tag<*>>(
     action = { clicks.events.map {} },
     handler = { handle { !it } },
-    applyValues = { attr("aria-checked", it, trueValue = "true") }
+    applyData = {
+        attr("role", "switch")
+        attr("aria-checked", it, trueValue = "true")
+    }
 )
 
 
@@ -68,7 +71,6 @@ toggle {
     }
 
     events {
-
     }
 }
 
@@ -97,10 +99,10 @@ inputField("ssdkfn skdfjnsdk skdfjnskd ksdjfnskdjf ksdjfnsk sdkjfbsdk") {
 
 */
 
-class Toggle(initializer: Initializer<Toggle>, context: RenderContext) : Component<Button> {
+class Toggle(initializer: Initializer<Toggle>) : Component<Button> {
 
     val label = TextHook()
-    val value = SwitchDatabindingHook()
+    val value = ToggleDatabindingHook()
 
     override fun RenderContext.render(classes: String?, id: String?) =
         button(
@@ -108,11 +110,10 @@ class Toggle(initializer: Initializer<Toggle>, context: RenderContext) : Compone
             id = id ?: value.id // ?: generateId if necessary
         ) {
             type("button")
-            attr("role", "switch")
             span("sr-only") { hook(label) }
             span(" pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200") {
                 /* <!-- Enabled: "translate-x-5", Not Enabled: "translate-x-0" --> */
-                className(value.values.map { if (it) "translate-x-5" else "translate-x-0" })
+                className(value.data.map { if (it) "translate-x-5" else "translate-x-0" })
                 attr("aria-hidden", "true")
             }
             hook(value)
@@ -127,4 +128,4 @@ fun RenderContext.toggle(
     classes: String? = null,
     id: String? = null,
     init: Initializer<Toggle>
-): Button = Toggle(init, this).run { render(classes, id) }
+): Button = Toggle(init).run { render(classes, id) }
