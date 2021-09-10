@@ -15,7 +15,7 @@ class RadioGroup<T>(initializer: Initializer<RadioGroup<T>>) : Component<Div> {
     val options = RadioOptionsHook<T>()
     val value = DatabindingHook<T, Int, FieldSet>(
         action = { changes.values().map { it.toInt() } },
-        handler = { handle<Int> { old, index -> options.options?.get(index) ?: old } },
+        handler = { handle { old, index -> options.options?.get(index) ?: old } },
         applyData = { data ->
             hook(options, data)
         }

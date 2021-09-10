@@ -69,7 +69,12 @@ class RadioOptionsHook<T> : OptionsHook<T, FieldSet, Div>() {
         div("bg-white rounded-md -space-y-px") {
             options?.withIndex()?.forEach { (index, opt) ->
                 val checkedFlow = data.map { it == opt }
-                label("rounded-tl-md rounded-tr-md relative border p-4 flex cursor-pointer focus:outline-none") {
+
+                val round = if (index == 0) " rounded-tl-md rounded-tr-md"
+                else if (index == (options?.size ?: 0) - 1) "rounded-bl-md rounded-br-md"
+                else ""
+
+                label("relative border p-4 flex cursor-pointer focus:outline-none $round") {
                     /* <!-- Checked: "bg-indigo-50 border-indigo-200 z-10", Not Checked: "border-gray-200" --> */
                     className(checkedFlow.map { if (it) "bg-indigo-50 border-indigo-200 z-10" else "border-gray-200" })
 
