@@ -1,8 +1,5 @@
 package dev.fritz2.tailwind.ui
 
-import dev.fritz2.binding.Handler
-import dev.fritz2.binding.RootStore
-import dev.fritz2.binding.Store
 import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.Div
 import dev.fritz2.dom.html.Option
@@ -16,13 +13,6 @@ import dev.fritz2.tailwind.hook
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-
-open class SingleSelectionStore : RootStore<Int?>(null) {
-    val toggle = handleAndEmit<Int, Int> { _, new ->
-        emit(new)
-        new
-    }
-}
 
 abstract class OptionsHook<T, C : Tag<*>, O : Tag<*>> {
     var options: List<T>? = null
@@ -42,8 +32,13 @@ abstract class OptionsHook<T, C : Tag<*>, O : Tag<*>> {
     }
 }
 
-class SelectOptionsHook<T> : OptionsHook<T, Select, Option>() {
+fun <T, C : Tag<*>, O : Tag<*>> C.hook(h: OptionsHook<T, C, O>, data: Flow<T>) = h.apply.invoke(this, data)
 
+
+/*
+ * TODO: overwritten vals or inline vals in constructor?
+ */
+class SelectOptionsHook<T> : OptionsHook<T, Select, Option>() {
     override var renderOptionLabel: Option.(T) -> Unit = { opt ->
         +opt.toString()
     }
@@ -56,34 +51,6 @@ class SelectOptionsHook<T> : OptionsHook<T, Select, Option>() {
             }
         }
     }
-
-}
-
-
-class SingleSelectionDatabindingHook<T, X, C : Tag<*>, O : Tag<*>>(
-    private val optionsHook: OptionsHook<T, C, O>,
-
-    inline val action: C.() -> Flow<X>,
-    inline val handler: Store<T>.() -> Handler<X>,
-//    inline val applyData: Y.(Flow<T>) -> Unit
-) {
-    lateinit var data: Flow<T>
-    lateinit var apply: C.() -> Unit
-    var id: String? = null
-
-    operator fun invoke(id: String? = null, data: Flow<T>, handler: C.(Flow<X>) -> Unit) {
-        this.id = id
-        this.data = data
-        apply = {
-            optionsHook.apply(this, data)
-
-            handler(action())
-        }
-    }
-
-    operator fun invoke(store: Store<T>) {
-        this.invoke(store.id, store.data) { it handledBy store.handler() }
-    }
 }
 
 
@@ -91,10 +58,12 @@ class SelectBox<T>(initializer: Initializer<SelectBox<T>>) : Component<Div> {
 
     val label = TextHook()
     val options = SelectOptionsHook<T>()
-    val value = SingleSelectionDatabindingHook<T, Int, Select, Option>(
-        options,
+    val value = DatabindingHook<T, Int, Select>(
         action = { changes.selectedIndex() },
-        handler = { handle<Int> { old, index -> options.options?.get(index) ?: old } }
+        handler = { handle<Int> { old, index -> options.options?.get(index) ?: old } },
+        applyData = { data ->
+            hook(options, data)
+        }
     )
 
     override fun RenderContext.render(classes: String?, id: String?) = div {
