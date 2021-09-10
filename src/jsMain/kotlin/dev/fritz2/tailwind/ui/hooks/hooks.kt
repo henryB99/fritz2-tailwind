@@ -1,4 +1,4 @@
-package dev.fritz2.tailwind
+package dev.fritz2.tailwind.ui.hooks
 
 import dev.fritz2.dom.WithText
 import dev.fritz2.dom.html.RenderContext

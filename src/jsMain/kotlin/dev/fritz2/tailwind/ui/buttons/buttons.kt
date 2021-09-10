@@ -2,7 +2,11 @@ package dev.fritz2.tailwind.ui.buttons
 
 import dev.fritz2.dom.DomListener
 import dev.fritz2.dom.html.RenderContext
-import dev.fritz2.tailwind.*
+import dev.fritz2.tailwind.Component
+import dev.fritz2.tailwind.ui.hooks.IconHook
+import dev.fritz2.tailwind.ui.hooks.Initializer
+import dev.fritz2.tailwind.ui.hooks.TextHook
+import dev.fritz2.tailwind.ui.hooks.hook
 import exportEvent
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.events.MouseEvent

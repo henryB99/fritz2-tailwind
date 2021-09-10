@@ -1,103 +1,14 @@
 package dev.fritz2.tailwind.ui
 
-import dev.fritz2.binding.Handler
-import dev.fritz2.binding.Store
-import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.Button
-import dev.fritz2.dom.html.Input
 import dev.fritz2.dom.html.RenderContext
-import dev.fritz2.dom.values
 import dev.fritz2.tailwind.Component
-import dev.fritz2.tailwind.Initializer
-import dev.fritz2.tailwind.TextHook
-import dev.fritz2.tailwind.hook
-import kotlinx.coroutines.flow.Flow
+import dev.fritz2.tailwind.ui.hooks.Initializer
+import dev.fritz2.tailwind.ui.hooks.TextHook
+import dev.fritz2.tailwind.ui.hooks.ToggleDatabindingHook
+import dev.fritz2.tailwind.ui.hooks.hook
 import kotlinx.coroutines.flow.map
-import org.w3c.dom.Element
 
-
-open class DatabindingHook<T, X, Y : Tag<*>>(
-    inline val action: Y.() -> Flow<X>,
-    inline val handler: Store<T>.() -> Handler<X>,
-    inline val applyData: Y.(Flow<T>) -> Unit
-) {
-    lateinit var data: Flow<T>
-    lateinit var apply: Y.() -> Unit
-    var id: String? = null
-
-    open operator fun invoke(id: String? = null, data: Flow<T>, handler: Y.(Flow<X>) -> Unit) {
-        this.id = id
-        this.data = data
-        apply = {
-            applyData(data)
-            handler(action())
-        }
-    }
-
-    open operator fun invoke(store: Store<T>) {
-        this.invoke(store.id, store.data) { it handledBy store.handler() }
-    }
-}
-
-fun <T, E : Element, X, Y : Tag<E>> Y.hook(h: DatabindingHook<T, X, Y>) = h.apply.invoke(this)
-
-class InputDatabindingHook : DatabindingHook<String, String, Input>(
-    action = { changes.values() },
-    handler = { update },
-    applyData = { value(it) }
-)
-
-class ToggleDatabindingHook : DatabindingHook<Boolean, Unit, Tag<*>>(
-    action = { clicks.events.map {} },
-    handler = { handle { !it } },
-    applyData = {
-        attr("role", "switch")
-        attr("aria-checked", it, trueValue = "true")
-    }
-)
-
-
-/*
-toggle {
-    value(myStore)
-
-    value(id = ..., flow = ...) {
-        selected handledBy myHandler
-    }
-
-    element {
-        disabled()
-        keyUps handledBy
-    }
-
-    events {
-    }
-}
-
-
-
-inputField("ssdkfn skdfjnsdk skdfjnskd ksdjfnskdjf ksdjfnsk sdkjfbsdk") {
-    label("myLabel") {
-        className("sdkjfnskdj")
-    }
-
-    helpText("kajsdbkjsbfsjdh") {
-    }
-
-    value(myStore)
-
-    element {
-        keyUps handled
-        disabled ...
-    }
-
-    items {
-    }
-
-}.domNode().also {
-}
-
-*/
 
 class Toggle(initializer: Initializer<Toggle>) : Component<Button> {
 

@@ -1,0 +1,39 @@
+
+toggle {
+    value(myStore)
+
+    value(id = ..., flow = ...) {
+        selected handledBy myHandler
+    }
+
+    element {
+        disabled()
+        keyUps handledBy
+    }
+
+    events {
+    }
+}
+
+
+
+inputField("ssdkfn skdfjnsdk skdfjnskd ksdjfnskdjf ksdjfnsk sdkjfbsdk") {
+    label("myLabel") {
+        className("sdkjfnskdj")
+    }
+
+    helpText("kajsdbkjsbfsjdh") {
+    }
+
+    value(myStore)
+
+    element {
+        keyUps handled
+        disabled ...
+    }
+
+    items {
+    }
+
+}.domNode().also {
+}

@@ -2,9 +2,9 @@ package dev.fritz2.tailwind.ui
 
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.tailwind.Component
-import dev.fritz2.tailwind.IconHook
-import dev.fritz2.tailwind.Initializer
-import dev.fritz2.tailwind.hook
+import dev.fritz2.tailwind.ui.hooks.IconHook
+import dev.fritz2.tailwind.ui.hooks.Initializer
+import dev.fritz2.tailwind.ui.hooks.hook
 import dev.fritz2.tailwind.ui.icons.Solid
 
 typealias IconDefinition = String
