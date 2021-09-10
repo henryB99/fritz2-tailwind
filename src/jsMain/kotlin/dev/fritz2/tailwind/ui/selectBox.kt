@@ -20,7 +20,7 @@ class SelectBox<T>(initializer: Initializer<SelectBox<T>>) : Component<Div> {
         }
     )
 
-    override fun RenderContext.render(classes: String?, id: String?) = div {
+    override fun RenderContext.render(classes: String?, id: String?) = div(classes) {
         if (label.isSet) {
             label("block text-sm font-medium text-gray-700") {
                 `for`("location")

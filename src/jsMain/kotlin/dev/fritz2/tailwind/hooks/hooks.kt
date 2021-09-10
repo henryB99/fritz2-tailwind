@@ -11,6 +11,7 @@ typealias Initializer<T> = T.() -> Unit
 /*
  * TODO: second type parameter needed for return value?
  */
+//TODO: can all hooks inherit this?
 abstract class Hook<R> {
     var apply: (R.(String?) -> Unit)? = null
 

@@ -1,6 +1,7 @@
 import dev.fritz2.binding.RootStore
 import dev.fritz2.binding.storeOf
 import dev.fritz2.dom.html.render
+import dev.fritz2.tailwind.ui.radioGroup
 import dev.fritz2.tailwind.ui.selectBox
 import dev.fritz2.tailwind.validation.WithValidator
 import kotlinx.coroutines.flow.map
@@ -48,20 +49,22 @@ fun main() {
 //
         val selectionStore = storeOf("")
         val selectionStore2 = storeOf("zwei")
+        val selectionStore3 = storeOf("zwei")
 
         div {
             p { selectionStore.data.map { "store1: $it" }.asText() }
             p { selectionStore2.data.map { "store2: $it" }.asText() }
+            p { selectionStore3.data.map { "store3: $it" }.asText() }
         }
 
         val opts = listOf("eins", "zwei", "drei", "vier")
 
-        selectBox<String> {
+        selectBox<String>("m-10") {
             options(opts)
             value(selectionStore)
         }
 
-        selectBox<String> {
+        selectBox<String>("m-10") {
             options(opts) {
                 +"Hier steht dann $it mit der Länge ${it.length}"
             }
@@ -75,6 +78,11 @@ fun main() {
                     }
                 }
             )
+        }
+
+        radioGroup<String>("m-10") {
+            options(opts)
+            value(selectionStore3)
         }
 
     }
