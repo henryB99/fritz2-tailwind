@@ -15,11 +15,6 @@ typealias Initializer<T> = T.() -> Unit
 abstract class Hook<R> {
     var apply: (R.(String?) -> Unit)? = null
 
-    val hook: R.(classes: String?) -> Unit
-        get() = { classes ->
-            apply?.let { it(classes) }
-        }
-
     val isSet: Boolean
         get() = (apply != null)
 }
@@ -28,9 +23,7 @@ abstract class Hook<R> {
  * TODO: Add ElementHook returning subtype of element
  */
 
-fun <T> T.hook(h: Hook<T>, classes: String? = null) {
-    h.hook.invoke(this, classes)
-}
+fun <T> T.hook(h: Hook<T>, classes: String? = null) = h.apply?.invoke(this, classes)
 
 
 class TextHook : Hook<WithText<*>>() {
