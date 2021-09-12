@@ -1,48 +1,47 @@
 package dev.fritz2.tailwind.hooks
 
-import dev.fritz2.binding.Handler
 import dev.fritz2.binding.Store
 import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.Input
 import dev.fritz2.dom.values
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapMerge
 
-open class DatabindingHook<T, X, Y : Tag<*>>(
-    inline val action: Y.() -> Flow<X>,
-    inline val handler: Store<T>.() -> Handler<X>,
-    inline val applyData: Y.(Flow<T>) -> Unit
+abstract class DatabindingHook<T, Y : Tag<*>>(
 ) : Hook<Y>() {
     lateinit var data: Flow<T>
     var id: String? = null
 
-    open operator fun invoke(id: String? = null, data: Flow<T>, handler: Y.(Flow<X>) -> Unit) {
+    abstract fun Y.render(handle: Y.(Flow<T>) -> Unit)
+
+    open operator fun invoke(id: String? = null, data: Flow<T>, handler: Y.(Flow<T>) -> Unit) {
         this.id = id
         this.data = data
         apply = {
-            applyData(data)
-            handler(action())
+            render(handler)
         }
     }
 
     open operator fun invoke(store: Store<T>) {
-        this.invoke(store.id, store.data) { it handledBy store.handler() }
+        this.invoke(store.id, store.data) { it handledBy store.update }
     }
 }
 
-//fun <T, E : Element, X, Y : Tag<E>> Y.hook(h: DatabindingHook<T, X, Y>, cla) = h.apply?.invoke(this)
 
-class InputDatabindingHook : DatabindingHook<String, String, Input>(
-    action = { changes.values() },
-    handler = { update },
-    applyData = { value(it) }
-)
-
-class ToggleDatabindingHook : DatabindingHook<Boolean, Unit, Tag<*>>(
-    action = { clicks.events.map {} },
-    handler = { handle { !it } },
-    applyData = {
-        attr("role", "switch")
-        attr("aria-checked", it, trueValue = "true")
+class InputDatabindingHook : DatabindingHook<String, Input>() {
+    override fun Input.render(handle: Input.(Flow<String>) -> Unit) {
+        handle(changes.values())
+        value(data)
     }
-)
+}
+
+class ToggleDatabindingHook : DatabindingHook<Boolean, Tag<*>>() {
+    override fun Tag<*>.render(handle: Tag<*>.(Flow<Boolean>) -> Unit) {
+        attr("role", "switch")
+        attr("aria-checked", data, trueValue = "true")
+
+        handle(data.flatMapMerge { value ->
+            clicks.map { !value }
+        })
+    }
+}

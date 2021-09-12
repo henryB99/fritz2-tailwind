@@ -3,10 +3,12 @@ import dev.fritz2.binding.storeOf
 import dev.fritz2.dom.html.render
 import dev.fritz2.tailwind.ui.radioGroup
 import dev.fritz2.tailwind.ui.selectBox
+import dev.fritz2.tailwind.ui.toggle
 import dev.fritz2.tailwind.validation.WithValidator
 import kotlinx.coroutines.flow.map
 import model.Framework
 import model.FrameworkValidator
+import model.L
 
 external fun require(module: String): dynamic
 
@@ -30,9 +32,9 @@ fun main() {
 //            trailing = { span("text-gray-500 sm:text-sm") { +"EUR" } }
 //        )
 //
-//        div("m-10") {
-//            frameworkStore.data.asText()
-//        }
+        div("m-10") {
+            frameworkStore.data.asText()
+        }
 //
 //        clickButton("m-10") {
 //            leftIcon(Solid.arrow_down)
@@ -42,11 +44,11 @@ fun main() {
 //            it
 //        }
 //
-//        toggle {
-//            label("Hallo Welt")
-//            value(store = frameworkStore.sub(L.Framework.bool))
-//        }
-//
+        toggle {
+            label("Hallo Welt")
+            value(store = frameworkStore.sub(L.Framework.bool))
+        }
+
         val selectionStore = storeOf("")
         val selectionStore2 = storeOf("zwei")
         val selectionStore3 = storeOf("zwei")
@@ -72,10 +74,7 @@ fun main() {
                 id = "hallo",
                 data = selectionStore2.data,
                 handler = {
-                    it handledBy selectionStore2.handle { _, index: Int ->
-                        console.log("index: $index")
-                        opts[index].also { console.log("returning $it") }
-                    }
+                    it handledBy selectionStore2.update
                 }
             )
         }

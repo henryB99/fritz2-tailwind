@@ -17,9 +17,10 @@ class Toggle(initializer: Initializer<Toggle>) : Component<Button> {
 
     override fun RenderContext.render(classes: String?, id: String?) =
         button(
-            "bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 $classes",
+            "relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 $classes",
             id = id ?: value.id // ?: generateId if necessary
         ) {
+            className(value.data.map { if (it) "bg-indigo-600" else "bg-gray-200" })
             type("button")
             span("sr-only") { hook(label) }
             span(" pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200") {

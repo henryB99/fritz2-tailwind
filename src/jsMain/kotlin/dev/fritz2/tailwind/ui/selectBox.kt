@@ -6,19 +6,23 @@ import dev.fritz2.dom.html.Select
 import dev.fritz2.dom.selectedIndex
 import dev.fritz2.tailwind.Component
 import dev.fritz2.tailwind.hooks.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapNotNull
 
+
+// TODO: as object at declaration? or is this performance overhead
+class SelectDatabindingHook<T>(private val options: SelectOptionsHook<T>) : DatabindingHook<T, Select>() {
+    override fun Select.render(handle: Select.(Flow<T>) -> Unit) {
+        handle(changes.selectedIndex().mapNotNull { options.options?.get(it) })
+        hook(options, data, handle)
+    }
+}
 
 class SelectBox<T>(initializer: Initializer<SelectBox<T>>) : Component<Div> {
 
     val label = TextHook()
     val options = SelectOptionsHook<T>()
-    val value = DatabindingHook<T, Int, Select>(
-        action = { changes.selectedIndex() },
-        handler = { handle<Int> { old, index -> options.options?.get(index) ?: old } },
-        applyData = { data ->
-            hook(options, data)
-        }
-    )
+    val value = SelectDatabindingHook(options)
 
     override fun RenderContext.render(classes: String?, id: String?) = div(classes) {
         if (label.isSet) {

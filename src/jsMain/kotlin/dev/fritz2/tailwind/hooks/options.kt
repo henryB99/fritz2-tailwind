@@ -5,16 +5,18 @@ import dev.fritz2.dom.html.Div
 import dev.fritz2.dom.html.FieldSet
 import dev.fritz2.dom.html.Option
 import dev.fritz2.dom.html.Select
+import dev.fritz2.dom.states
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 abstract class OptionsHook<T, C : Tag<*>, O : Tag<*>> {
     var options: List<T>? = null
     abstract var renderOptionLabel: O.(T) -> Unit
 
-    // oder inline val
-    abstract val apply: C.(Flow<T>) -> Unit
+    abstract val apply: C.(Flow<T>, C.(Flow<T>) -> Unit) -> Unit
 
+    //TODO: offer context here instead of o to provide specific dsl (comments, etc.)
     operator fun invoke(options: List<T>, renderOptionLabel: O.(T) -> Unit = this.renderOptionLabel) {
         this.options = options
         this.renderOptionLabel = renderOptionLabel
@@ -26,7 +28,8 @@ abstract class OptionsHook<T, C : Tag<*>, O : Tag<*>> {
     }
 }
 
-fun <T, C : Tag<*>, O : Tag<*>> C.hook(h: OptionsHook<T, C, O>, data: Flow<T>) = h.apply.invoke(this, data)
+fun <T, C : Tag<*>, O : Tag<*>> C.hook(h: OptionsHook<T, C, O>, data: Flow<T>, handle: C.(Flow<T>) -> Unit) =
+    h.apply.invoke(this, data, handle)
 
 
 /*
@@ -37,7 +40,7 @@ class SelectOptionsHook<T> : OptionsHook<T, Select, Option>() {
         +opt.toString()
     }
 
-    override val apply: Select.(Flow<T>) -> Unit = { data ->
+    override val apply: Select.(Flow<T>, Select.(Flow<T>) -> Unit) -> Unit = { data, _ ->
         options?.forEach { opt ->
             option {
                 renderOptionLabel(opt)
@@ -49,15 +52,15 @@ class SelectOptionsHook<T> : OptionsHook<T, Select, Option>() {
 
 /*
  * TODO: overwritten vals or inline vals in constructor?
+ * TODO: Better here or next to component class
  */
-class RadioOptionsHook<T> : OptionsHook<T, FieldSet, Div>() {
+class RadioGroupOptionsHook<T> : OptionsHook<T, FieldSet, Div>() {
     //TODO: add Flow<Boolean> as second parameter
     override var renderOptionLabel: Div.(T) -> Unit = { opt ->
-        /* <!-- Checked: "text-indigo-900", Not Checked: "text-gray-900" --> */
-        span(
-            id = "privacy-setting-0-label",
-            baseClass = "block text-sm font-medium"
-        ) { +opt.toString() }
+        span("block text-sm font-medium") {
+            //className(checkedFlow.map { if(it) "text-indigo-900" else "text-gray-900"})
+            +opt.toString()
+        }
         /* <!-- Checked: "text-indigo-700", Not Checked: "text-gray-500" --> */
 //        span(
 //            id = "privacy-setting-0-description",
@@ -65,7 +68,8 @@ class RadioOptionsHook<T> : OptionsHook<T, FieldSet, Div>() {
 //        ) { +"""This project would be available to anyone who has the link""" }
     }
 
-    override val apply: FieldSet.(Flow<T>) -> Unit = { data ->
+    override val apply: FieldSet.(Flow<T>, FieldSet.(Flow<T>) -> Unit) -> Unit = { data, handle ->
+        val fs = this //FIXME: no better way to do so???
         div("bg-white rounded-md -space-y-px") {
             options?.withIndex()?.forEach { (index, opt) ->
                 val checkedFlow = data.map { it == opt }
@@ -82,9 +86,10 @@ class RadioOptionsHook<T> : OptionsHook<T, FieldSet, Div>() {
                         type("radio")
                         name("privacy-setting")
                         checked(checkedFlow)
-                        value(index.toString())
-                        attr("aria-labelledby", "privacy-setting-0-label")
-                        attr("aria-describedby", "privacy-setting-0-description")
+                        //TODO: How to handle this?
+//                        attr("aria-labelledby", "privacy-setting-0-label")
+//                        attr("aria-describedby", "privacy-setting-0-description")
+                        fs.handle(changes.states().filter { true }.map { opt })
                     }
                     div("ml-3 flex flex-col") {
                         renderOptionLabel(opt)
