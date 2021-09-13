@@ -5,6 +5,7 @@ import dev.fritz2.dom.html.Div
 import dev.fritz2.dom.html.Option
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.html.Select
+import dev.fritz2.dom.selectedIndex
 import dev.fritz2.tailwind.Component
 import dev.fritz2.tailwind.hooks.Initializer
 import dev.fritz2.tailwind.hooks.OptionsDelagtingDatabindingHook
@@ -12,6 +13,7 @@ import dev.fritz2.tailwind.hooks.OptionsHook
 import dev.fritz2.tailwind.hooks.hook
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 
 class SelectOptionsHook<T> : OptionsHook<T, T, Select, Option>() {
@@ -19,13 +21,14 @@ class SelectOptionsHook<T> : OptionsHook<T, T, Select, Option>() {
         +opt.toString()
     }
 
-    override val apply: Select.(Flow<T>, Select.(Flow<T>) -> Unit) -> Unit = { data, _ ->
+    override val apply: Select.(Flow<T>, Select.(Flow<T>) -> Unit) -> Unit = { data, handle ->
         options?.forEach { opt ->
             option {
                 renderOptionLabel(opt)
                 selected(data.map { it == opt })
             }
         }
+        handle(changes.selectedIndex().mapNotNull { options?.get(it) })
     }
 }
 
