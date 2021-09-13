@@ -1,11 +1,15 @@
 import dev.fritz2.binding.RootStore
 import dev.fritz2.binding.storeOf
 import dev.fritz2.dom.html.render
+import dev.fritz2.tailwind.ui.buttons.clickButton
 import dev.fritz2.tailwind.ui.checkboxGroup
+import dev.fritz2.tailwind.ui.icons.Solid
 import dev.fritz2.tailwind.ui.radioGroup
 import dev.fritz2.tailwind.ui.selectBox
 import dev.fritz2.tailwind.ui.toggle
 import dev.fritz2.tailwind.validation.WithValidator
+import dev.fritz2.tracking.tracker
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import model.Framework
 import model.FrameworkValidator
@@ -18,6 +22,14 @@ fun main() {
 
     val frameworkStore = object : RootStore<Framework>(Framework("fritz2", 17, false)), WithValidator<Framework, Unit> {
         override val validator = FrameworkValidator
+        val loading = tracker()
+
+        val longRunning = handle {
+            loading.track("running...") {
+                delay(3000)
+                it
+            }
+        }
 
         init {
             validate(Unit)
@@ -36,15 +48,42 @@ fun main() {
         div("m-10") {
             frameworkStore.data.asText()
         }
-//
-//        clickButton("m-10") {
-//            leftIcon(Solid.arrow_down)
-//            label("herunterladen")
-//        } handledBy frameworkStore.handle {
-//            window.alert("Bin da")
-//            it
-//        }
-//
+
+        div("flex w-full") {
+            clickButton("m-10") {
+                leftIcon(Solid.arrow_left)
+                label("herunterladen")
+            } handledBy frameworkStore.longRunning
+
+            clickButton("m-10") {
+                label("herunterladen")
+            } handledBy frameworkStore.longRunning
+
+            clickButton("m-10") {
+                rightIcon(Solid.arrow_right)
+                label("herunterladen")
+            } handledBy frameworkStore.longRunning
+        }
+
+
+        div("flex w-full") {
+            clickButton("m-10") {
+                leftIcon(Solid.arrow_left)
+                label("herunterladen")
+                loading(frameworkStore.loading.data)
+            } handledBy frameworkStore.longRunning
+
+            clickButton("m-10") {
+                label("herunterladen")
+                loading(frameworkStore.loading.data)
+            } handledBy frameworkStore.longRunning
+
+            clickButton("m-10 w-15") {
+                rightIcon(Solid.arrow_right)
+                label("herunterladen")
+                loading(frameworkStore.loading.data)
+            } handledBy frameworkStore.longRunning
+        }
         toggle {
             label("Hallo Welt")
             value(store = frameworkStore.sub(L.Framework.bool))

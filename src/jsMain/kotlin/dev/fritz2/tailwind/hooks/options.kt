@@ -16,6 +16,7 @@ abstract class OptionsHook<T, E, C : Tag<*>, O : Tag<*>> {
     var options: List<T>? = null
     abstract var renderOptionLabel: O.(T) -> Unit
 
+    //TODO: make fun
     abstract val apply: C.(Flow<E>, C.(Flow<E>) -> Unit) -> Unit
 
     //TODO: offer context here instead of o to provide specific dsl (comments, etc.)
@@ -71,17 +72,17 @@ class RadioGroupOptionsHook<T> : OptionsHook<T, T, FieldSet, Div>() {
     }
 
     override val apply: FieldSet.(Flow<T>, FieldSet.(Flow<T>) -> Unit) -> Unit = { data, handle ->
-        val fs = this //FIXME: no better way to do so???
-        div("bg-white rounded-md -space-y-px") {
-            options?.withIndex()?.forEach { (index, opt) ->
-                val checkedFlow = data.map { it == opt }
+        this.apply {
+            div("bg-white rounded-md -space-y-px") {
+                options?.withIndex()?.forEach { (index, opt) ->
+                    val checkedFlow = data.map { it == opt }
 
-                val round = if (index == 0) " rounded-tl-md rounded-tr-md"
-                else if (index == (options?.size ?: 0) - 1) "rounded-bl-md rounded-br-md"
-                else ""
+                    val round = if (index == 0) " rounded-tl-md rounded-tr-md"
+                    else if (index == (options?.size ?: 0) - 1) "rounded-bl-md rounded-br-md"
+                    else ""
 
-                label("relative border p-4 flex cursor-pointer focus:outline-none $round") {
-                    className(checkedFlow.map { if (it) "bg-indigo-50 border-indigo-200 z-10" else "border-gray-200" })
+                    label("relative border p-4 flex cursor-pointer focus:outline-none $round") {
+                        className(checkedFlow.map { if (it) "bg-indigo-50 border-indigo-200 z-10" else "border-gray-200" })
 
                     input("h-4 w-4 mt-0.5 cursor-pointer text-indigo-600 border-gray-300 focus:ring-indigo-500") {
                         type("radio")
@@ -91,10 +92,11 @@ class RadioGroupOptionsHook<T> : OptionsHook<T, T, FieldSet, Div>() {
                         //TODO: How to handle this?
 //                        attr("aria-labelledby", "privacy-setting-0-label")
 //                        attr("aria-describedby", "privacy-setting-0-description")
-                        fs.handle(changes.states().filter { true }.map { opt })
+                        this@apply.handle(changes.states().filter { true }.map { opt })
                     }
-                    div("ml-3 flex flex-col") {
-                        renderOptionLabel(opt)
+                        div("ml-3 flex flex-col") {
+                            renderOptionLabel(opt)
+                        }
                     }
                 }
             }

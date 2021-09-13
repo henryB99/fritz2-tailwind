@@ -13,6 +13,7 @@ typealias Initializer<T> = T.() -> Unit
  */
 //TODO: can all hooks inherit this?
 abstract class Hook<R> {
+
     var apply: (R.(String?) -> Unit)? = null
 
     val isSet: Boolean

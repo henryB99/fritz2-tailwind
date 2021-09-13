@@ -16,7 +16,7 @@ class RadioGroupDatabindingHook<T>(private val options: RadioGroupOptionsHook<T>
 
 class RadioGroup<T>(initializer: Initializer<RadioGroup<T>>) : Component<Div> {
 
-    //TODO: what to do with this one?
+    // TODO: what to do with this one?
     val label = TextHook()
     val options = RadioGroupOptionsHook<T>()
     val value = RadioGroupDatabindingHook(options)
