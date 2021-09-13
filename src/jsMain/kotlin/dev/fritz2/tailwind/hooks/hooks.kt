@@ -15,6 +15,8 @@ abstract class SimpleHook<T> : Hook {
 
 fun <T> T.hook(h: SimpleHook<T>) = h.apply?.invoke(this)
 
+fun <T> T.hooks(vararg h: SimpleHook<T>) = h.forEach { it.apply?.invoke(this) }
+
 
 abstract class TagHook<T, E> : Hook {
     var apply: (T.(String?) -> E)? = null

@@ -1,6 +1,7 @@
 import dev.fritz2.binding.RootStore
 import dev.fritz2.binding.storeOf
 import dev.fritz2.dom.html.render
+import dev.fritz2.tailwind.ui.application.forms.inputField
 import dev.fritz2.tailwind.ui.buttons.clickButton
 import dev.fritz2.tailwind.ui.checkboxGroup
 import dev.fritz2.tailwind.ui.icons.Solid
@@ -8,6 +9,7 @@ import dev.fritz2.tailwind.ui.radioGroup
 import dev.fritz2.tailwind.ui.selectBox
 import dev.fritz2.tailwind.ui.toggle
 import dev.fritz2.tailwind.validation.WithValidator
+import dev.fritz2.tailwind.validation.validationMessage
 import dev.fritz2.tracking.tracker
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
@@ -38,15 +40,22 @@ fun main() {
 
     render {
 
-//        inputField("m-10",
-//            label = "Testlabel",
-//            store = frameworkStore.sub(L.Framework.name),
-//            helpText = "some help may be good...",
-//            trailing = { span("text-gray-500 sm:text-sm") { +"EUR" } }
-//        )
-//
         div("m-10") {
             frameworkStore.data.asText()
+        }
+
+        inputField("m-10", "myInput") {
+            label = "Testlabel"
+            type("password")
+            disabled(frameworkStore.sub(L.Framework.bool).data)
+            with(frameworkStore.sub(L.Framework.name)) {
+                value("input", this.data, this.validationMessage()) { it handledBy this@with.update }
+            }
+            //value(frameworkStore.sub(L.Framework.name))
+
+            helpText = "some help may be good..."
+            //store = frameworkStore.sub(L.Framework.name)
+            //trailing({ span("text-gray-500 sm:text-sm") { +"EUR" } })
         }
 
         div("flex w-full") {
