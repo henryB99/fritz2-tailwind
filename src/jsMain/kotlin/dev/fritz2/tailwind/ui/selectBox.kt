@@ -1,11 +1,15 @@
 package dev.fritz2.tailwind.ui
 
+import TextHook
 import dev.fritz2.dom.html.Div
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.html.Select
 import dev.fritz2.dom.selectedIndex
 import dev.fritz2.tailwind.Component
-import dev.fritz2.tailwind.hooks.*
+import dev.fritz2.tailwind.hooks.DatabindingHook
+import dev.fritz2.tailwind.hooks.Initializer
+import dev.fritz2.tailwind.hooks.SelectOptionsHook
+import dev.fritz2.tailwind.hooks.hook
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 

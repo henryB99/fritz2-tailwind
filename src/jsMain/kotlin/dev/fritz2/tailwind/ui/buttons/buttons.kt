@@ -1,10 +1,15 @@
 package dev.fritz2.tailwind.ui.buttons
 
+import TextHook
 import dev.fritz2.dom.DomListener
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.tailwind.Component
-import dev.fritz2.tailwind.hooks.*
-import exportEvent
+import dev.fritz2.tailwind.hooks.IconHook
+import dev.fritz2.tailwind.hooks.Initializer
+import dev.fritz2.tailwind.hooks.LoadingHook
+import dev.fritz2.tailwind.hooks.hook
+import export
+import hook
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.events.MouseEvent
 
@@ -16,7 +21,7 @@ class ClickButton(initializer: Initializer<ClickButton>) : Component<DomListener
     val loading = LoadingHook()
 
     override fun RenderContext.render(classes: String?, id: String?): DomListener<MouseEvent, HTMLButtonElement> =
-        exportEvent {
+        export {
             button(
                 "$classes inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
                 id = id

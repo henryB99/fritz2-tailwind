@@ -7,7 +7,7 @@ import dev.fritz2.dom.values
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 
-abstract class DatabindingHook<T, Y : Tag<*>> : Hook<Y>() {
+abstract class DatabindingHook<T, Y : Tag<*>> : SimpleHook<Y>() {
     lateinit var data: Flow<T>
     var id: String? = null
 

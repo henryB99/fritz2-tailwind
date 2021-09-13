@@ -1,67 +1,30 @@
 package dev.fritz2.tailwind.hooks
 
-import dev.fritz2.dom.WithText
-import dev.fritz2.dom.html.RenderContext
-import dev.fritz2.dom.html.Svg
-import dev.fritz2.tailwind.ui.IconDefinition
-import kotlinx.coroutines.flow.Flow
-
 typealias Initializer<T> = T.() -> Unit
 
-/*
- * TODO: second type parameter needed for return value?
- */
-//TODO: can all hooks inherit this?
-abstract class Hook<R> {
-
-    var apply: (R.(String?) -> Unit)? = null
-
+interface Hook {
     val isSet: Boolean
+}
+
+abstract class SimpleHook<T> : Hook {
+    var apply: (T.() -> Unit)? = null
+
+    override val isSet: Boolean
         get() = (apply != null)
 }
 
-/*
- * TODO: Add ElementHook returning subtype of element
- */
-
-fun <T> T.hook(h: Hook<T>, classes: String? = null) = h.apply?.invoke(this, classes)
+fun <T> T.hook(h: SimpleHook<T>) = h.apply?.invoke(this)
 
 
-class TextHook : Hook<WithText<*>>() {
-    operator fun invoke(value: String) {
-        apply = { +value }
-    }
+abstract class TagHook<T, E> : Hook {
+    var apply: (T.(String?) -> E)? = null
 
-    operator fun invoke(value: Flow<String>) {
-        apply = { value.asText() }
-    }
+    override val isSet: Boolean
+        get() = (apply != null)
 }
 
+fun <T, E> T.hook(h: TagHook<T, E>, classes: String? = null) = h.apply?.invoke(this, classes)
 
 
-class IconHook : Hook<RenderContext>() {
-    private inline fun RenderContext.renderSvg(classes: String?, content: String): Svg =
-        svg(classes) {
-            xmlns("http://www.w3.org/2000/svg")
-            viewBox("0 0 20 20")
-            fill("currentColor")
-            attr("aria-hidden", "true")
-            content(content)
-        }
 
-    operator fun invoke(value: IconDefinition) {
-        apply = { classes ->
-            renderSvg(classes, value)
-        }
-    }
 
-    operator fun invoke(value: Flow<IconDefinition>) {
-        apply = { classes ->
-//            lateinit var result: Svg
-            value.render {
-                renderSvg(classes, it)
-            }
-            //          return result
-        }
-    }
-}
