@@ -5,7 +5,7 @@ import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.Input
 import dev.fritz2.dom.values
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flatMapLatest
 
 abstract class DatabindingHook<T, Y : Tag<*>>(
 ) : Hook<Y>() {
@@ -40,7 +40,7 @@ class ToggleDatabindingHook : DatabindingHook<Boolean, Tag<*>>() {
         attr("role", "switch")
         attr("aria-checked", data, trueValue = "true")
 
-        handle(data.flatMapMerge { value ->
+        handle(data.flatMapLatest { value ->
             clicks.map { !value }
         })
     }

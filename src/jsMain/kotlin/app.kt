@@ -1,6 +1,7 @@
 import dev.fritz2.binding.RootStore
 import dev.fritz2.binding.storeOf
 import dev.fritz2.dom.html.render
+import dev.fritz2.tailwind.ui.checkboxGroup
 import dev.fritz2.tailwind.ui.radioGroup
 import dev.fritz2.tailwind.ui.selectBox
 import dev.fritz2.tailwind.ui.toggle
@@ -52,11 +53,13 @@ fun main() {
         val selectionStore = storeOf("")
         val selectionStore2 = storeOf("zwei")
         val selectionStore3 = storeOf("zwei")
+        val selectionStore4 = storeOf(listOf("drei"))
 
         div {
             p { selectionStore.data.map { "store1: $it" }.asText() }
             p { selectionStore2.data.map { "store2: $it" }.asText() }
             p { selectionStore3.data.map { "store3: $it" }.asText() }
+            p { selectionStore4.data.map { "store4: $it" }.asText() }
         }
 
         val opts = listOf("eins", "zwei", "drei", "vier")
@@ -82,6 +85,20 @@ fun main() {
         radioGroup<String>("m-10") {
             options(opts)
             value(selectionStore3)
+        }
+
+        checkboxGroup<String>("m-10") {
+            options(opts)
+            value(
+                id = "hugo",
+                data = selectionStore4.data,
+                handler = { v ->
+                    v handledBy selectionStore4.handle { list, a ->
+                        console.log("updating from $list -> $a")
+                        a
+                    }
+                }
+            )
         }
 
     }

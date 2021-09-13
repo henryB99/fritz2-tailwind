@@ -8,21 +8,21 @@ import dev.fritz2.tailwind.hooks.*
 import kotlinx.coroutines.flow.Flow
 
 
-class RadioGroupDatabindingHook<T>(private val options: RadioGroupOptionsHook<T>) : DatabindingHook<T, FieldSet>() {
-    override fun FieldSet.render(handle: FieldSet.(Flow<T>) -> Unit) {
+class CheckboxGroupDatabindingHook<T>(private val options: CheckboxGroupOptionsHook<T>) :
+    DatabindingHook<List<T>, FieldSet>() {
+    override fun FieldSet.render(handle: FieldSet.(Flow<List<T>>) -> Unit) {
         hook(options, data, handle)
     }
 }
 
-class RadioGroup<T>(initializer: Initializer<RadioGroup<T>>) : Component<Div> {
+class CheckboxGroup<T>(initializer: Initializer<CheckboxGroup<T>>) : Component<Div> {
 
-    //TODO: what to do with this one?
     val label = TextHook()
-    val options = RadioGroupOptionsHook<T>()
-    val value = RadioGroupDatabindingHook(options)
+    val options = CheckboxGroupOptionsHook<T>()
+    val value = CheckboxGroupDatabindingHook(options)
 
     override fun RenderContext.render(classes: String?, id: String?) = div(classes) {
-        fieldset(id = id ?: value.id) {
+        fieldset("space-y-5") {
             legend("sr-only") { hook(label) }
             hook(value)
         }
@@ -33,8 +33,8 @@ class RadioGroup<T>(initializer: Initializer<RadioGroup<T>>) : Component<Div> {
     }
 }
 
-fun <T> RenderContext.radioGroup(
+fun <T> RenderContext.checkboxGroup(
     classes: String? = null,
     id: String? = null,
-    init: Initializer<RadioGroup<T>>
-): Div = RadioGroup(init).run { render(classes, id) }
+    init: Initializer<CheckboxGroup<T>>
+): Div = CheckboxGroup(init).run { render(classes, id) }
