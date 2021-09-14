@@ -7,26 +7,27 @@ import export
 import kotlinx.coroutines.flow.Flow
 
 class IconHook : TagHook<RenderContext, Svg>() {
-    private inline fun RenderContext.renderSvg(classes: String?, content: String): Svg =
+    private fun RenderContext.renderSvg(classes: String?, content: String, init: (Svg.() -> Unit)?): Svg =
         svg(classes) {
             xmlns("http://www.w3.org/2000/svg")
             viewBox("0 0 20 20")
             fill("currentColor")
             attr("aria-hidden", "true")
             content(content)
+            if (init != null) init()
         }
 
-    operator fun invoke(value: IconDefinition) = this.apply {
+    operator fun invoke(value: IconDefinition, init: (Svg.() -> Unit)? = null) = this.apply {
         apply = { classes ->
-            renderSvg(classes, value)
+            renderSvg(classes, value, init)
         }
     }
 
-    operator fun invoke(value: Flow<IconDefinition>) = this.apply {
+    operator fun invoke(value: Flow<IconDefinition>, init: (Svg.() -> Unit)? = null) = this.apply {
         apply = { classes ->
-            export<Svg> {
+            export {
                 value.render {
-                    export(renderSvg(classes, it))
+                    export(renderSvg(classes, it, init))
                 }
             }
         }

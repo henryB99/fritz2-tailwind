@@ -22,8 +22,6 @@ class ClickButton(initializer: Initializer<ClickButton>) : Component<DomListener
     private var iconRight: Boolean = false
     fun IconHook.right(): IconHook = this.apply { iconRight = true }
 
-    fun IconHook.large(): IconHook = this.apply { iconRight = true }
-
     override fun RenderContext.render(classes: String?, id: String?): DomListener<MouseEvent, HTMLButtonElement> =
         export {
             button(

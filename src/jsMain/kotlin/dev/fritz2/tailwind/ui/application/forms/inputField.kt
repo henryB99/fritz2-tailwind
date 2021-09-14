@@ -1,12 +1,15 @@
 package dev.fritz2.tailwind.ui.application.forms
 
 import TextHook
-import dev.fritz2.dom.html.*
+import dev.fritz2.dom.html.Div
+import dev.fritz2.dom.html.Input
+import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.tailwind.Component
 import dev.fritz2.tailwind.hooks.*
-import dev.fritz2.tailwind.hooks.hook
-import dev.fritz2.tailwind.ui.*
+import dev.fritz2.tailwind.ui.icon
 import dev.fritz2.tailwind.ui.icons.Solid
+import dev.fritz2.tailwind.ui.textLabel
+import dev.fritz2.tailwind.ui.validationMessageLabel
 import kotlinx.coroutines.flow.map
 
 /*
@@ -32,6 +35,7 @@ inputField("ssdkfn skdfjnsdk skdfjnskd ksdjfnskdjf ksdjfnsk sdkjfbsdk") {
  */
 
 class HelperTextHook : TagHook<RenderContext, Unit>() {
+    //TODO: Flow and init... ?
     operator fun invoke(text: String) {
         apply = {
             p(baseClass = "mt-2 text-sm text-gray-500", id = "$id-description") {

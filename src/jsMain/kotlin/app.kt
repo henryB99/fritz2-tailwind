@@ -92,7 +92,9 @@ fun main() {
             } handledBy frameworkStore.longRunning
 
             clickButton("m-10") {
-                icon(Solid.arrow_down)
+                icon(Solid.arrow_down) {
+                    className("text-yellow-400")
+                }
                 loading(frameworkStore.loading.data)
             } handledBy frameworkStore.longRunning
 
