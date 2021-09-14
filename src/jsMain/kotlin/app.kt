@@ -45,7 +45,7 @@ fun main() {
         }
 
         inputField("m-10", "myInput") {
-            label = "Testlabel"
+            label("Testlabel")
             type("password")
             disabled(frameworkStore.sub(L.Framework.bool).data)
             with(frameworkStore.sub(L.Framework.name)) {
@@ -53,7 +53,7 @@ fun main() {
             }
             //value(frameworkStore.sub(L.Framework.name))
 
-            helpText = "some help may be good..."
+            helpText("some help may be good...")
             //store = frameworkStore.sub(L.Framework.name)
             //trailing({ span("text-gray-500 sm:text-sm") { +"EUR" } })
         }
