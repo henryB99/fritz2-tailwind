@@ -65,12 +65,17 @@ class RadioGroupOptionsHook<T> : OptionsHook<T, T, FieldSet, Div>() {
 
 class RadioGroup<T>(initializer: Initializer<RadioGroup<T>>) : Component<Div> {
 
-    // TODO: what to do with this one?
     val label = TextHook()
     val options = RadioGroupOptionsHook<T>()
     val value = OptionsDelagtingDatabindingHook(options)
 
     override fun RenderContext.render(classes: String?, id: String?) = div(classes) {
+        if (label.isSet) {
+            label("block text-sm font-medium text-gray-700 mb-1") {
+                `for`("location")
+                hook(label)
+            }
+        }
         fieldset(id = id ?: value.id) {
             legend("sr-only") { hook(label) }
             hook(value)

@@ -104,6 +104,7 @@ fun main() {
         val opts = listOf("eins", "zwei", "drei", "vier")
 
         selectBox<String>("m-10") {
+            label("Bitte wählen")
             options(opts)
             value(selectionStore)
         }
@@ -122,11 +123,13 @@ fun main() {
         }
 
         radioGroup<String>("m-10") {
+            label("Bitte wählen...")
             options(opts)
             value(selectionStore3)
         }
 
         checkboxGroup<String>("m-10") {
+            label("Bitte wählen...")
             options(opts)
             value(
                 id = "hugo",

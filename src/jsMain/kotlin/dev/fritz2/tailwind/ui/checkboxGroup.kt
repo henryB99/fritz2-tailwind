@@ -68,7 +68,14 @@ class CheckboxGroup<T>(initializer: Initializer<CheckboxGroup<T>>) : Component<D
     val value = OptionsDelagtingDatabindingHook(options)
 
     override fun RenderContext.render(classes: String?, id: String?) = div(classes) {
-        fieldset("space-y-5") {
+        if (label.isSet) {
+            label("block text-sm font-medium text-gray-700") {
+                `for`("location")
+                hook(label)
+            }
+        }
+        val indentCheckboxes = if (label.isSet) "mx-4" else ""
+        fieldset("space-y-5 $indentCheckboxes") {
             legend("sr-only") { hook(label) }
             hook(value)
         }
