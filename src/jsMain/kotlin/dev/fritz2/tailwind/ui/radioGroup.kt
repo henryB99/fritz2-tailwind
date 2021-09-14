@@ -5,6 +5,7 @@ import dev.fritz2.dom.html.Div
 import dev.fritz2.dom.html.FieldSet
 import dev.fritz2.dom.html.RenderContext
 import dev.fritz2.dom.states
+import dev.fritz2.identification.Id
 import dev.fritz2.tailwind.Component
 import dev.fritz2.tailwind.hooks.Initializer
 import dev.fritz2.tailwind.hooks.OptionsDelagtingDatabindingHook
@@ -70,13 +71,15 @@ class RadioGroup<T>(initializer: Initializer<RadioGroup<T>>) : Component<Div> {
     val value = OptionsDelagtingDatabindingHook(options)
 
     override fun RenderContext.render(classes: String?, id: String?) = div(classes) {
+        val componentId = id ?: value.id ?: Id.next()
+
         if (label.isSet) {
-            label("block text-sm font-medium text-gray-700 mb-1") {
-                `for`("location")
-                hook(label)
+            textLabel(id = componentId) {
+                text.use(label)
             }
         }
-        fieldset(id = id ?: value.id) {
+
+        fieldset(id = componentId) {
             legend("sr-only") { hook(label) }
             hook(value)
         }

@@ -5,7 +5,7 @@ import dev.fritz2.dom.html.Svg
 
 
 fun RenderContext.spinner(classes: String? = null, id: String? = null): Svg =
-    svg("$classes animate-spin") {
+    svg("animate-spin ${classes.orEmpty()}") {
         xmlns("http://www.w3.org/2000/svg")
         fill("none")
         viewBox("0 0 24 24")
