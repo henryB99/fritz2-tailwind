@@ -60,7 +60,7 @@ fun main() {
 
         div("flex w-full") {
             clickButton("m-10") {
-                leftIcon(Solid.arrow_left)
+                icon(Solid.arrow_left)
                 label("herunterladen")
             } handledBy frameworkStore.longRunning
 
@@ -69,7 +69,11 @@ fun main() {
             } handledBy frameworkStore.longRunning
 
             clickButton("m-10") {
-                rightIcon(Solid.arrow_right)
+                icon(Solid.arrow_down)
+            } handledBy frameworkStore.longRunning
+
+            clickButton("m-10") {
+                icon(Solid.arrow_right).right()
                 label("herunterladen")
             } handledBy frameworkStore.longRunning
         }
@@ -77,7 +81,7 @@ fun main() {
 
         div("flex w-full") {
             clickButton("m-10") {
-                leftIcon(Solid.arrow_left)
+                icon(Solid.arrow_left)
                 label("herunterladen")
                 loading(frameworkStore.loading.data)
             } handledBy frameworkStore.longRunning
@@ -87,8 +91,13 @@ fun main() {
                 loading(frameworkStore.loading.data)
             } handledBy frameworkStore.longRunning
 
-            clickButton("m-10 w-15") {
-                rightIcon(Solid.arrow_right)
+            clickButton("m-10") {
+                icon(Solid.arrow_down)
+                loading(frameworkStore.loading.data)
+            } handledBy frameworkStore.longRunning
+
+            clickButton("m-10") {
+                icon(Solid.arrow_right).right()
                 label("herunterladen")
                 loading(frameworkStore.loading.data)
             } handledBy frameworkStore.longRunning

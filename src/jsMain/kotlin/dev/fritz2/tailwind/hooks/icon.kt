@@ -16,13 +16,13 @@ class IconHook : TagHook<RenderContext, Svg>() {
             content(content)
         }
 
-    operator fun invoke(value: IconDefinition) {
+    operator fun invoke(value: IconDefinition) = this.apply {
         apply = { classes ->
             renderSvg(classes, value)
         }
     }
 
-    operator fun invoke(value: Flow<IconDefinition>) {
+    operator fun invoke(value: Flow<IconDefinition>) = this.apply {
         apply = { classes ->
             export<Svg> {
                 value.render {

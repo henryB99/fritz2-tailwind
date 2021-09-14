@@ -1,0 +1,10 @@
+
+
+Labels und Options (Hauke)
+Meldungen an Form-Components (Christian)
+Init an Tag-Hooks (Jens)
+id/aria in Databinding/Options-Hooks (Jens)
+ids und fors, o.Ä. (Christian)
+(popper.js einbinden (?))
+modals & managed components (Christian)
+card (Hauke)

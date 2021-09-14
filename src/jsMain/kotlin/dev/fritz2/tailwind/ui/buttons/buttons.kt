@@ -16,33 +16,34 @@ import org.w3c.dom.events.MouseEvent
 
 class ClickButton(initializer: Initializer<ClickButton>) : Component<DomListener<MouseEvent, HTMLButtonElement>> {
     val label = TextHook()
-    val leftIcon = IconHook()
-    val rightIcon = IconHook()
+    val icon = IconHook()
     val loading = LoadingHook()
+
+    private var iconRight: Boolean = false
+    fun IconHook.right(): IconHook = this.apply { iconRight = true }
+
+    fun IconHook.large(): IconHook = this.apply { iconRight = true }
 
     override fun RenderContext.render(classes: String?, id: String?): DomListener<MouseEvent, HTMLButtonElement> =
         export {
             button(
-                "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${classes.orEmpty()}",
+                "inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${classes.orEmpty()}",
                 id = id
             ) {
                 type("button")
 
-                val leftIconClasses = "-ml-1 mr-3 h-5 w-5"
-                if (leftIcon.isSet) hook(loading, leftIconClasses) {
-                    hook(leftIcon, leftIconClasses)
+                val iconClasses =
+                    "h-5 w-5 " + if (iconRight) "-mr-1 ml-3 order-last" else if (!label.isSet) "-mx-1" else "-ml-1 mr-3"
+
+                if (icon.isSet) hook(loading, iconClasses) {
+                    hook(icon, iconClasses)
                 }
 
-                if (!(leftIcon.isSet || rightIcon.isSet)) {
-                    hook(loading, "mx-3 h-5 -w-5") {
+                if (!icon.isSet) {
+                    hook(loading, "h-5 w-5 mx-3") {
                         span { hook(label) }
                     }
                 } else span { hook(label) }
-
-                val rightIconClasses = "-mr-1 ml-3 h-5 w-5"
-                if (rightIcon.isSet) hook(loading, rightIconClasses) {
-                    hook(rightIcon, rightIconClasses)
-                }
 
                 export(clicks)
             }
