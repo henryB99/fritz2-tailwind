@@ -28,7 +28,9 @@ fun <T, E, C : Tag<*>, O : Tag<*>> C.hook(h: OptionsHook<T, E, C, O>, data: Flow
 
 class OptionsDelagtingDatabindingHook<T, E, C : Tag<*>, O : Tag<*>>(private val options: OptionsHook<T, E, C, O>) :
     DatabindingHook<E, C>() {
-    override fun C.render(handle: C.(Flow<E>) -> Unit) {
-        hook(options, data, handle)
+    override fun C.render(handle: (C.(Flow<E>) -> Unit)?) {
+        // TODO: Check if omitting rendering if handle is null is correct here or should be delegated into the
+        //  OptionHook implementations
+        handle?.let { hook(options, data, it) }
     }
 }

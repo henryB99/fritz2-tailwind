@@ -1,20 +1,13 @@
 package dev.fritz2.tailwind.ui.application.forms
 
 import TextHook
-import dev.fritz2.binding.Store
-import dev.fritz2.dom.Tag
 import dev.fritz2.dom.html.*
-import dev.fritz2.dom.values
-import dev.fritz2.identification.uniqueId
 import dev.fritz2.tailwind.Component
 import dev.fritz2.tailwind.hooks.*
 import dev.fritz2.tailwind.hooks.hook
 import dev.fritz2.tailwind.ui.*
 import dev.fritz2.tailwind.ui.icons.Solid
-import dev.fritz2.tailwind.validation.validationMessage
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlin.collections.Map
 
 /*
 inputField("ssdkfn skdfjnsdk skdfjnskd ksdjfnskdjf ksdjfnsk sdkjfbsdk") {
@@ -38,13 +31,6 @@ inputField("ssdkfn skdfjnsdk skdfjnskd ksdjfnskdjf ksdjfnsk sdkjfbsdk") {
 }
  */
 
-/*
-class EitherHook<T, E : Tag<*>>(private val right: TagHook<T, E>, private val left: TagHook<T, E>) : TagHook<T, E>() {
-
-}
-
- */
-
 class HelperTextHook : TagHook<RenderContext, Unit>() {
     operator fun invoke(text: String) {
         apply = {
@@ -58,30 +44,24 @@ class HelperTextHook : TagHook<RenderContext, Unit>() {
 open class InputField(initializer: Initializer<InputField>) : Component<Div> {
 
     val value = InputDatabindingHook()
-    // TODO: Fill with useful functionality!
-    //  Or find something else to grab and work with the ``Flow<T?>?``
-    //val validation = ValidationMessageHook(value)
-
-    val disabled = BooleanAttributeHook(Input::disabled, Input::disabled)
-    val type = AttributeHook(Input::type, Input::type)
-    val placeholder = AttributeHook(Input::placeholder, Input::placeholder)
-    val describedBy = RawAttributeHook<String, Input>("aria-describedby")
-    val helpText = HelperTextHook()
     val label = TextHook()
+    val placeholder = AttributeHook(Input::placeholder, Input::placeholder)
+    val helpText = HelperTextHook()
+    val type = AttributeHook(Input::type, Input::type)
+    val disabled = BooleanAttributeHook(Input::disabled, Input::disabled)
+    val describedBy = RawAttributeHook<String, Input>("aria-describedby")
 
-
-    //var helpText: String? = null
+    // TODO: What's this good for?
     var trailing: (Div.() -> Unit)? = null
-    //var store: Store<String>? = null
 
     override fun RenderContext.render(classes: String?, id: String?): Div {
         val componentId = id ?: value.id
 
         // TODO: find abstraction for handling with messages (or null flow or no flow at all)
-        val validationMsgs = value?.messages
+        val validationMessages = value.messages
 
         return div(classes) {
-            if(label.isSet) {
+            if (label.isSet) {
                 textLabel(id = componentId) {
                     text.use(label)
                 }
@@ -93,9 +73,9 @@ open class InputField(initializer: Initializer<InputField>) : Component<Div> {
             div("mt-1 relative rounded-md shadow-sm") {
                 input(
                     "block w-full pr-10 sm:text-sm rounded-md",
-                    id = id
+                    id = componentId
                 ) {
-                    validationMsgs?.let {
+                    validationMessages?.let {
                         className(it.map { msg ->
                             if (msg != null)
                                 "border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500"
@@ -112,7 +92,7 @@ open class InputField(initializer: Initializer<InputField>) : Component<Div> {
 
                     //init?.invoke(this)
                 }
-                validationMsgs?.render { msg ->
+                validationMessages?.render { msg ->
                     msg?.let {
                         div("absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none") {
                             icon("h-5 w-5 text-red-500") { content(Solid.exclamation_circle) }
@@ -123,12 +103,53 @@ open class InputField(initializer: Initializer<InputField>) : Component<Div> {
                 }
             }
 
-            validationMsgs?.render { msg ->
+            /*
+            Idee:
+            validationMessages.renderNotNull { messages ->
+                validationMessageLabel(id = componentId) {
+                    message(messages.message)
+                }
+            }.orElse {
+                hook(helpText)
+            }
+            // -> geht nicht, weil flow selber null sein kann!
+
+            // Oder:
+            renderUncertain {
+                default { flow ->
+                    // flow is present and not null!
+                }
+                onNull {
+                    // flow is null or null on flow
+                    // -> beats other two!
+                }
+                noValue {
+                    // value on flow is null
+                }
+                noFlow {
+                    // flow itself is null
+                }
+            }
+
+            // Beispiel:
+            renderUncertain {
+                default { messages ->
+                    validationMessageLabel(id = componentId) {
+                        message(messages.message)
+                    }
+                }
+                onNull {
+                    hook(helpText)
+                }
+            }
+
+             */
+
+            validationMessages?.render { msg ->
                 if (msg != null) {
-                    p(
-                        baseClass = "mt-2 text-sm text-red-600",
-                        id = "$id-validation"
-                    ) { +msg.message }
+                    validationMessageLabel(id = componentId) {
+                        message(msg.message)
+                    }
                 } else hook(helpText)
             } ?: hook(helpText)
         }
